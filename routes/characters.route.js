@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const Character = require('../models/Character.model')
-const { isValidObjectId } = ('mongoose')
+const axios = require('axios')
+
 /**
  * !All the routes here are prefixed with /api/characters
  */
@@ -55,29 +56,16 @@ router.get('/:id', async (req, res, next) => {
  * ? This route should update a character and respond with
  * ? the updated character
  */
-router.patch('/:id', async (req, res, next) => {
-	try {
-		/* const {name, occupation, weapon, cartoon} = req.body
-			const characterToUpdate = {} 
-			if (name) {
-				characterToUpdate.name = name }
-				and so on... */
-		
-		if (!isValidObjectId(req.params.id)) {
-			return res.status(400).json({message: 'The id is not correct'})
-		}
-		const foundCharacter = await Character.findById(req.params.id)
-		if (!foundCharacter) {
-			return res.status(400).json({message: 'No character found for this id'})
-		}
 
-		const characterId = req.params.id
-		const characterToUpdate = { ...req.body}
+router.patch('/:id', async (req, res, next) => {
+  const { characterId } = req.params
+  const characterToUpdate = { ...req.body }
+  try {
 		const updatedCharacter = await Character.findByIdAndUpdate(characterId, characterToUpdate, {new: true})
 		res.status(202).json(updatedCharacter)
-	} catch (error) {
-		next(error)
-	}
+  } catch (error) {
+    next(error)
+  }
 })
 
 /**
@@ -86,8 +74,8 @@ router.patch('/:id', async (req, res, next) => {
  */
 router.delete('/:id', async (req, res, next) => {
 	try {
-		const character = await Character.findByIdAndDelete(req.params.id)
-      res.json({message: `${character} has been successfully deleted`})
+		await Character.findByIdAndDelete(req.params.id)
+      res.json({message: `${req.params.id} has been successfully deleted`})
     } catch (error) {
 		next(error)
 	}

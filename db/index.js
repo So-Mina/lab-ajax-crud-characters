@@ -13,7 +13,9 @@ const MONGO_URI =
 	process.env.MONGODB_URI || "mongodb://localhost/ajax-crud-characters"
 async function openConnection() {
 	try {
-		return await mongoose.connect(MONGO_URI)
+		return await mongoose
+		.set('strictQuery', true)
+		.connect(MONGO_URI)
 	} catch (error) {
 		console.error(`Error while connecting to the database: ${error.message}`)
 	}
